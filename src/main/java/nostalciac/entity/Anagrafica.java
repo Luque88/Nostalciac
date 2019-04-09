@@ -12,12 +12,15 @@ import java.util.TreeSet;
 import javax.json.bind.annotation.JsonbDateFormat;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 /**
@@ -27,6 +30,15 @@ import javax.persistence.Table;
 @Entity
 @Table (name= "t_anagrafiche")
 public class Anagrafica implements Serializable {
+
+    public void setCorsi(Set<Corso> tosave) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+     public static enum Ruolo {
+        A, U
+    }
+    
     
     @Id
     @Column(name="id_anagrafica")
@@ -49,7 +61,8 @@ public class Anagrafica implements Serializable {
     private String mail;
     
     @Column(name = "ruolo")
-    private String ruolo = "U";
+    @Enumerated(EnumType.STRING)
+    private Ruolo ruolo = Ruolo.U;
     
     @Column(name = "citta")
     private String citta;
@@ -64,14 +77,15 @@ public class Anagrafica implements Serializable {
     private String note;
       
     @Column(name = "filefoto")
-    private String filefoto;
+    private String foto;
     
-    @Column(name = "nascita")
+    @Column(name = "data_nascita")
     @JsonbDateFormat("dd/MM/yyyy")
     private LocalDate nascita;
 
     
     @ManyToMany
+    @OrderBy("nome ASC")
     @JoinTable(
             name = "t_anagtafiche_corsi",
             joinColumns
@@ -142,11 +156,11 @@ public class Anagrafica implements Serializable {
         this.mail = mail;
     }
 
-    public String getRuolo() {
+   public Ruolo getRuolo() {
         return ruolo;
     }
 
-    public void setRuolo(String ruolo) {
+    public void setRuolo(Ruolo ruolo) {
         this.ruolo = ruolo;
     }
 
@@ -183,11 +197,11 @@ public class Anagrafica implements Serializable {
     }
 
     public String getFilefoto() {
-        return filefoto;
+        return foto;
     }
 
     public void setFilefoto(String filefoto) {
-        this.filefoto = filefoto;
+        this.foto = foto;
     }
 
     public LocalDate getNascita() {
@@ -203,7 +217,7 @@ public class Anagrafica implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + this.id;
+        hash = 73 * hash + this.id;
         return hash;
     }
 
@@ -226,16 +240,14 @@ public class Anagrafica implements Serializable {
 
     @Override
     public String toString() {
-        return "Anagrafica{" + "id=" + id + ", cognome=" + cognome + ", nome=" + nome + ", usr=" + usr + ", pwd=" + pwd + ", mail=" + mail + ", ruolo=" + ruolo + ", citta=" + citta + ", indirizzo=" + indirizzo + ", tel=" + tel + ", note=" + note + ", filefoto=" + filefoto + ", nascita=" + nascita + '}';
+     return "Anagrafica{" + "id=" + id + ", cognome=" + cognome + ", nome="
+                + nome + ", nascita=" + nascita + ", usr=" + usr + ", pwd="
+                + pwd + ", mail=" + mail + ", ruolo=" + ruolo + ", citta="
+                + citta + ", indirizzo=" + indirizzo + ", tel=" + tel + ", note="
+                + note + ", foto=" + foto + '}';
     }
+}   
 
-    public void setCorsi(Set<Corso> tosave) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
-    
-}
-       
+
     
 

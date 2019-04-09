@@ -17,6 +17,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -28,11 +29,13 @@ import nostalciac.entity.Corso;
 import nostalciac.entity.Sede;
 
 /**
- *
+ *gestisce le operazioni sull'insieme dei corsi
  * @author tss
  */
-
+@Path("/corsi")
    public class CorsiResource {
+    
+   
     
     @Inject  
     private  CorsoStore store;
@@ -43,67 +46,48 @@ import nostalciac.entity.Sede;
     @Context
     ResourceContext rc;
     
-    private  Integer sedeId;
+     private  Integer sedeId;
     private Integer idSede;
+   
+ 
     
 
     
 
     @GET
     public List<Corso> findAll() {
+        //return store.all();
         return store.findBySede(sedeId);
     }
 
-   
     @Path("{id}")
-    // "./resources/tags/2 "   <--- esempio
-   public CorsoResource find(@PathParam("id") Integer id) {
+    public CorsoResource find() {
         CorsoResource resource = rc.getResource(CorsoResource.class);
-        resource.setId(id);
-        resource.setIdSede();
+        resource.setIdSede(idSede);
         return resource;
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(Corso c, @Context UriInfo uriInfo, int idSede) {
-        
-        Sede sede= sedeStore.find(idSede);
+    public Response create(Corso c, @Context UriInfo uriInfo) {
+        int idSede = 0;
+        Sede sede = sedeStore.find(idSede);
         c.setSede(sede);
         Corso saved = store.save(c);
-         URI uri = uriInfo
-                .getAbsolutePathBuilder()
+        URI uri = uriInfo.getAbsolutePathBuilder()
                 .path("/" + saved.getId())
                 .build();
-//         return Response.ok(uri).build();
         return Response.ok(uri).build();
-        
     }
 
-   
-  //   @PUT
-  //   @Path("{id}/tags")
-  //  @Consumes(MediaType.APPLICATION_JSON)
-     // public void updateTags(@PathParam("id")Integer id, List<Integer> idTags){
-   //    Corso finded = store.find(id);
-   //     Set<Tag> tosave = idTags.stream()
-   //              .map(t -> tagStore.find(t)),
-   //             .collect(Collectors.toSet());
-   //     finded.setTags(tosave);
-   //   store.save(finded);
-     //  }
+    
 
+    /*
+    get e set
+     */
     public void setIdSede(Integer idSede) {
         this.idSede = idSede;
     }
 
-    
-  }
-
-  
-    
-     
-     
-
-    
+}
  

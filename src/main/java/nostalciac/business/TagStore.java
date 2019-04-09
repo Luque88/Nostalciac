@@ -22,40 +22,36 @@ import nostalciac.entity.Tag;
 @Stateless
 public class TagStore {
 
-    // Se abbiamo più di un DB dobbiamo indicarglielo,
     @PersistenceContext()
     EntityManager em;
 
     /**
-     * *
-     * Restituisce tutti i tag
+     * Restituisce tutti i Tag da DB
      *
-     * @return
+     * @return tutti i Tag
      */
     public List<Tag> all() {
-        // Dammi tutti 
-        return em.createQuery("select e FROM Tag e ORDER BY e.tag ", Tag.class)
+        return em.createQuery("SELECT e FROM Tag e ORDER BY e.tag", Tag.class)
                 .getResultList();
     }
 
-    // per salvare nuovo record su DB
-    public Tag create(Tag tag) {
-        return em.merge(tag);
-    }
-
     /**
-     * *
      * Insert o Update su DB
      *
      * @param tag
      * @return
      */
     public Tag save(Tag tag) {
+        /*
+        em.persist(tag);
+        em.refresh(tag);
+        return tag;
+         */
         return em.merge(tag);
     }
 
     /**
-     * Ritorna il tag con ID passato
+     * Restituisce il Tag con id
      *
      * @param id
      * @return
@@ -65,14 +61,14 @@ public class TagStore {
     }
 
     /**
-     * Cancella il record passando l'ID
+     * Rimuove da DB il Tag tramite id
      *
      * @param id
      */
     public void remove(int id) {
-        // prima si cerca per ID e poi si cancella
-        Tag toremove = em.find(Tag.class, id);
-        em.remove(toremove);
+        em.remove(find(id));
+        // oppure:
+        // em.remove(em.find(Tag.class, id));
     }
 
     /**
@@ -84,7 +80,6 @@ public class TagStore {
      */
     public List<Tag> search(String searchTag, String searchTipo) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        // creare query
         CriteriaQuery<Tag> query = cb.createQuery(Tag.class);
         Root<Tag> root = query.from(Tag.class);
 
@@ -106,7 +101,6 @@ public class TagStore {
 
         return em.createQuery(query)
                 .getResultList();
-
     }
 }
 

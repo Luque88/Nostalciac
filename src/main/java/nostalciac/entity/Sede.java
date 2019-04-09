@@ -9,6 +9,8 @@ package nostalciac.entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -21,6 +23,7 @@ import javax.persistence.Table;
 public class Sede implements Serializable{
     // indicazione della chiave primaria tramite notazione @Id
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     // indicazione nome dei fields tramite @Column
     @Column(name = "id_sede")
     private int id;
@@ -46,11 +49,12 @@ public class Sede implements Serializable{
     // Costruttore vuoto
     public Sede() {
     }
-    
-    public Sede(int id, String nome) {
-        this.id = id;
-        this.nome = nome;
+
+    Sede(int aInt, String string) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+   
     
     // Setter e Getter delle proprietà
 

@@ -20,7 +20,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -52,44 +54,26 @@ public class Corso implements Serializable {
     @Column(name = "note_corso")
     private String note;
 
-    // Cioè non persistente, non viene salvato su DB
-//    @Transient
-   
-
-    // per aggiungere un field con foreign keys
-    //          siccome abbiamo un oggetto che ha il field mappato
-    // possiamo usare l'oggetto Sede (già definito)
-    // mettendo l'indicazione FetchType LAZY non carica i dati delle sedi
-//   @ManyToOne(fetch = FetchType.LAZY)
+    @Transient
+    private Integer idSede;
+ 
+    //@JsonTransient
     @ManyToOne(fetch = FetchType.LAZY)
-    // Non fa comparire la sede nel JSON
-//    @JsonbTransient
     @JoinColumn(name = "id_sede", referencedColumnName = "id_sede")
     private Sede sede;
-
     
+    
+    //@JsonTransient
     @ManyToMany()
-    // serve per spiegare come è fatta la nostra tabella "t_tags_corsi"
+    @OrderBy("tag ASC")
     @JoinTable(
             name = "t_tags_corsi",
-            joinColumns
-            = @JoinColumn(name = "id_corso",
-                    referencedColumnName = "id_corso"),
-            inverseJoinColumns
-            = @JoinColumn(name = "id_tag",
-                    referencedColumnName = "id_tag")
+            joinColumns =
+                    @JoinColumn(name = "id_corso", referencedColumnName = "id_corso"),
+            inverseJoinColumns = 
+                    @JoinColumn(name = "id_tag", referencedColumnName = "id_tag")
     )
     private Set<Tag> tags = new TreeSet<>();
-    
-    
-
-    public Sede getSede() {
-        return sede;
-    }
-
-    public void setSede(Sede sede) {
-        this.sede = sede;
-    }
 
     public Corso() {
     }
@@ -142,10 +126,34 @@ public class Corso implements Serializable {
         this.note = note;
     }
 
+    public Integer getIdSede() {
+        return idSede;
+    }
+
+    public void setIdSede(Integer idSede) {
+        this.idSede = idSede;
+    }
+
+    public Sede getSede() {
+        return sede;
+    }
+
+    public void setSede(Sede sede) {
+        this.sede = sede;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + this.id;
+        int hash = 5;
+        hash = 53 * hash + this.id;
         return hash;
     }
 
@@ -166,11 +174,8 @@ public class Corso implements Serializable {
 
     @Override
     public String toString() {
-        return "Corso{" + "id=" + id + ", nome=" + nome + ", edizione=" + edizione + ", inizio=" + inizio + ", fine=" + fine + ", note=" + note + '}';
+        return "Corso{" + "id=" + id + ", nome=" + nome + ", edizione=" + edizione
+                + ", inizio=" + inizio + ", fine=" + fine + ", note=" + note
+                + ", sede=" + sede.getNome() + '}';
     }
-
-    public void setTags(Set<Tag> tosave) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

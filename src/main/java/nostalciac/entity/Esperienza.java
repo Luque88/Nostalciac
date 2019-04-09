@@ -9,9 +9,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.json.bind.annotation.JsonbDateFormat;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,7 +21,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -54,11 +58,16 @@ public class Esperienza  implements Serializable {
     @JsonbDateFormat("dd/MM/yyyy")
     private LocalDate fine;
 
-   @ManyToOne
+    @Transient
+    private Integer idAnagrafica;
+    
+     //@JsonbTransient
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_anagrafica", referencedColumnName = "id_anagrafica")
     private Anagrafica anagrafica;
     
     @ManyToMany
+    @OrderBy("tag ASC")
     // serve per spiegare come è fatta la nostra tabella "t_tags_esperienze"
     @JoinTable(
             name = "t_tags_esperienze",
@@ -71,22 +80,24 @@ public class Esperienza  implements Serializable {
             
     )
      
-    private Set<Tag> tags;
+    private Set<Tag> tags = new TreeSet<>();
     private String nome;
-    
+ 
+    public Esperienza() {
+    }
     
 
 //Setter e Getter della proprietà
 
-  public Integer getId() {
+  public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getNome(String nome) {
+    public String getNome() {
       
         return nome;
       
@@ -157,8 +168,8 @@ public class Esperienza  implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 79 * hash + Objects.hashCode(this.id);
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.id);
         return hash;
     }
 

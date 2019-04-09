@@ -9,6 +9,10 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import nostalciac.entity.Esperienza;
 import nostalciac.entity.Tag;
 
@@ -19,31 +23,20 @@ import nostalciac.entity.Tag;
 @Stateless
 public class EsperienzaStore {
     
-    @PersistenceContext
+    @PersistenceContext()
     EntityManager em;
-    
-     public List<Esperienza> findAll() {
-        // Dammi tutti 
-        return em.createQuery("select e FROM Esperienza e ORDER BY e.cognome ", Esperienza.class)
-                .getResultList();
-    }
-    
+
     /**
-     * per salvare nuovo record su DB
-     * 
-     * @param esperienza
-     * @return 
+     * Restituisce tutte le Esperienze da DB
+     *
+     * @return tutte le Esperienze
      */
-   public List<Esperienza> findByAnagrafica(Integer id ){
-        return em.createQuery("select e from Esperienza e "
-                + "where e.anagrafica.id= :id_anagrafica "
-                + "order by e.nome", Esperienza.class)
-                .setParameter("id_anagrafica", id)
+    public List<Esperienza> all() {
+        return em.createQuery("SELECT e FROM Esperienza e ORDER BY e.nome", Esperienza.class)
                 .getResultList();
     }
-    
+
     /**
-     * *
      * Insert o Update su DB
      *
      * @param esperienza
@@ -52,39 +45,73 @@ public class EsperienzaStore {
     public Esperienza save(Esperienza esperienza) {
         return em.merge(esperienza);
     }
-
     
     /**
-     * Ritorna il tag con ID passato
+     * Restituisce l'Esperienza con id
      *
      * @param id
      * @return
      */
-    public Esperienza find(Integer id) {
+    public Esperienza find(int id) {
         return em.find(Esperienza.class, id);
     }
-
+    
     /**
-     * Cancella il record passando l'ID
+     * Restituisce l'Esperienza a partire dall'id dell'Anagrafica
+     *
+     * @param anagraficaId
+     * @return
+     */
+    public List<Esperienza> findByAnagrafica(int anagraficaId) {
+        return em.createQuery("select e from Esperienza e where e.anagrafica.id= :anagrafica_id order by e.nome", Esperienza.class)
+                .setParameter("anagrafica_id", anagraficaId)
+                .getResultList();
+    }
+    /**
+     * Rimuove da DB l'Esperienza tramite id
      *
      * @param id
      */
-    public void remove(Integer id) {
-        // prima si cerca per ID e poi si cancella
+    public void remove(int id) {
         em.remove(find(id));
     }
 
-    public List<Tag> findTags(Integer id) {
-        return em.createQuery(
-                "select e.tags from Esperienza e where e.id= :id",Tag.class)
-                .setParameter("id", id)
+    /**
+     * Restituisce le esperienze trovate in base alla ricerca
+     *
+     * @param searchNome
+     * @return
+     */
+    public List<Esperienza> search(String searchNome, String searchLuogo) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Esperienza> query = cb.createQuery(Esperienza.class);
+        Root<Esperienza> root = query.from(Esperienza.class);
+
+        Predicate condition = cb.conjunction();
+
+        if (searchNome != null && !searchNome.isEmpty()) {
+            condition = cb.and(condition,
+                    cb.like(root.get("nome"), "%" + searchNome + "%"));
+        }
+
+        if (searchLuogo != null && !searchLuogo.isEmpty()) {
+            condition = cb.and(condition,
+                    cb.like(root.get("luogo"), "%" + searchLuogo + "%"));
+        }
+        
+        query.select(root)
+                .where(condition)
+                .orderBy(cb.asc(root.get("nome")));
+
+        return em.createQuery(query)
                 .getResultList();
     }
 
-    public List<Esperienza> findByAnagrafica() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Tag> findTags(int id) {
+        return em.createQuery("select e.tags from Esperienza e where e.id= :esperienza_id", Tag.class)
+                .setParameter("esperienza_id", id)
+                .getResultList();
     }
-    
 }
 
     

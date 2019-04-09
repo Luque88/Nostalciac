@@ -14,19 +14,29 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import nostalciac.business.CorsoStore;
 import nostalciac.business.SedeStore;
 import nostalciac.business.TagStore;
 import nostalciac.entity.Corso;
+import nostalciac.entity.Sede;
 import nostalciac.entity.Tag;
 
 /**
- *
+ *sottorisorsa di CorsiResource
+ * 
+ * gestisce le operazioni sul singolo corso
+ * 
  * @author tss
  */
 
 public class CorsoResource {
+    
+    private int id;
+    private Integer sedeId;
+     
     
     @Inject
     private CorsoStore store;
@@ -37,9 +47,17 @@ public class CorsoResource {
     @Inject
     private TagStore tagStore;
     
-    private Integer id;
-    private Integer idSede;
-    
+    @Context
+    ResourceContext rc;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setSedeId(Integer sedeId) {
+        this.sedeId = sedeId;
+    }
+   
     @GET
     public Corso find(){
         return store.find(id);
@@ -47,10 +65,11 @@ public class CorsoResource {
     
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public void update(Corso c) {
-        c.setId(id);
-        c.setSede(sedeStore.find(idSede));
-        store.save(c);
+    public void update(Corso corso) {
+        corso.setId(id);
+        Sede sede = sedeStore.find(sedeId);
+        corso.setSede(sede);
+        store.save(corso);
     }
 
     @DELETE
@@ -59,14 +78,18 @@ public class CorsoResource {
     }
 
     @GET
-    @Path("tags")
+    //@Path("{id}/tags)
+    @Path("/tags")
+    //public List<Tag> findTags(@PathParam("id") int id ) {
     public List<Tag> findTags() {
         return store.findTags(id);
     }
 
     @PUT
-    @Path("tags")
+    //@Path("{id}/tags")
+    @Path("/tags")
     @Consumes(MediaType.APPLICATION_JSON)
+    //public void updateTags(@PathParam("id") int id, List<Integer> idTags){
     public void updateTags(List<Integer> idTags) {
         Corso finded = store.find(id);
         Set<Tag> tosave = idTags.stream()
@@ -75,22 +98,12 @@ public class CorsoResource {
         finded.setTags(tosave);
         store.save(finded);
     }
-    
-    /*
-    get e set
-    */
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setIdSede(Integer idSede) {
-        this.idSede = idSede;
-    }
-
-    void setIdSede() {
+    void setIdSede(Integer idSede) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+ }   
     
     
-}
+    
+

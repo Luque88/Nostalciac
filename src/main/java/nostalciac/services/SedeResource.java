@@ -25,17 +25,19 @@ import nostalciac.entity.Sede;
 // non deve avere annotazioni Path perchè è una sottorisorsa di SediResource
 public class SedeResource {
     
-    @Inject
-    private  CorsoStore corsoStore;
+    private Integer id;
     
     @Inject
     private  SedeStore store;
     
-    private  Integer id;
-  
-     
+    @Inject
+    private  CorsoStore corsoStore;
+    
     @Context
     ResourceContext rc;
+  
+     
+    
 
     
 
@@ -51,11 +53,11 @@ public class SedeResource {
     // aggiorna su DB il record indicato con id
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public void update(Sede s) {
+    public void update(Sede sede) {
         // se id esiste nel DB faccio un aggiornamento
         // altrimenti lo creo nuovo
-        s.setId(id);
-        store.save(s);
+        sede.setId(id);
+        store.save(sede);
     }
 
     // Espongo il metodo di update DELETE

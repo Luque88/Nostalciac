@@ -14,6 +14,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -27,7 +28,6 @@ import nostalciac.entity.Tag;
  *
  * @author tss
  */
-@Path("esperienze")
 public class EsperienzaResource {
     
     @Inject
@@ -42,13 +42,15 @@ public class EsperienzaResource {
     @Context
     ResourceContext rc;
 
+    @PathParam("id")
+    private Integer id;
+    
     private Integer idAnagrafica;
     
-    private Integer id;
+    
     
     @GET
     public Esperienza find(){
-        System.out.println("EsperienzaResource.find()...");
         return store.find(id);
     }
     
@@ -95,4 +97,3 @@ public class EsperienzaResource {
     
     
 }
-

@@ -62,7 +62,7 @@ public class TagsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(Tag tag, @Context UriInfo uriInfo) {
         
-        Tag saved = store.create(tag);
+        Tag saved = store.save(tag);
         // gli vogliamo restituire il percorso della risorsa esposta
         // del tipo "/resources/tags/25"
         URI uri=uriInfo

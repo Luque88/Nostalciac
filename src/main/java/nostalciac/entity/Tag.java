@@ -8,6 +8,8 @@ package nostalciac.entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -22,6 +24,7 @@ public class Tag implements Serializable{
     
     // @Id per indicare la proprietà che è la chiave primaria sul db
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     // Messo mappatura ai field
     // Per la prima colonna abbiamo inserito due proprietà non necessarie
     // visto che il DB già esiste...sono:
@@ -29,7 +32,8 @@ public class Tag implements Serializable{
     // length: indica che è uno String di 50 caratteri
     @Column(name = "id_tag", nullable = false,length = 50)
     private int id;
-    
+ 
+   
     @Column(name = "tag")
     private String tag;
     
@@ -66,8 +70,8 @@ public class Tag implements Serializable{
     
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 97 * hash + this.id;
+        int hash = 7;
+        hash =53 * hash + this.id;
         return hash;
     }
 

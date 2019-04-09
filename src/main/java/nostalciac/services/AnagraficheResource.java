@@ -11,6 +11,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -34,35 +35,23 @@ public class AnagraficheResource {
     
     @GET
     public List<Anagrafica> findAll() {
-        return store.findAll();
+        return store.all();
     }
     
-  
-    
-    @POST
+  @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(Anagrafica anagrafica, @Context UriInfo uriInfo) {
-        
-        Anagrafica saved = store.create(anagrafica);
-        // gli vogliamo restituire il percorso della risorsa esposta
-        // del tipo "/resources/tags/25"
-        URI uri=uriInfo
-                .getAbsolutePathBuilder()
-                .path("/"+saved.getId())
+    public Response create(Anagrafica a, @Context UriInfo uriInfo) {
+        Anagrafica saved = store.save(a);
+        URI uri = uriInfo.getAbsolutePathBuilder()
+                .path("/" + saved.getId())
                 .build();
-        
         return Response.ok(uri).build();
-        
     }
-        
-       @Path("{id}")
-    public AnagraficaResource find(@PathParam("id") Integer id){
-        AnagraficaResource resource = rc.getResource(AnagraficaResource.class);
-        resource.setId(id);
-        return resource;
+    
+    @Path("{id}")
+    public AnagraficaResource find(){
+        return  rc.getResource(AnagraficaResource.class);
     }
-}
- 
-        
-         
+}  
+    
    

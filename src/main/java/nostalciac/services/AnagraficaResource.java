@@ -14,6 +14,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -40,43 +41,38 @@ public class AnagraficaResource {
     EsperienzaStore esperienzaStore;
     
     @Inject
-     CorsoStore corsoStore;
+    CorsoStore corsoStore;
     
     @Context
     ResourceContext rc;
     
-      private  Integer id;
+    @PathParam("id")
+    private Integer id;
     
-   
+      
     
-      // Espongo il metodo di ricerca GET 
+    // Espongo il metodo di ricerca GET 
     // per ID
-    @GET
-    // non serve più il path (perchè glielo passa AnagraficheResource) @Path("{id}")
+     
+     @GET
     public Anagrafica find() {
         return store.find(id);
     }
 
-    // Espongo il metodo di update PUT 
-    // aggiorna su DB il record indicato con id
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     public void update(Anagrafica a) {
-        // se id esiste nel DB faccio un aggiornamento
-        // altrimenti lo creo nuovo
         a.setId(id);
         store.save(a);
     }
 
-    // Espongo il metodo di update DELETE
-    // cancello il record indicato con id
     @DELETE
     public void delete() {
         store.remove(id);
     }
-    
-    @Path("/esperienze")
-   public EsperienzeResource esperienze() {
+
+    @Path("esperienze")
+    public EsperienzeResource esperienze() {
         EsperienzeResource resource = rc.getResource(EsperienzeResource.class);
         resource.setIdAnagrafica(id);
         return resource;
@@ -99,11 +95,12 @@ public class AnagraficaResource {
         finded.setCorsi(tosave);
         store.save(finded);
     }
-    /*
-    get e set
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
 }
+
+    
+    
+   
+    
+    
+   

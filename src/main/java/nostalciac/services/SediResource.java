@@ -13,6 +13,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -34,14 +35,10 @@ public class SediResource {
     @Inject
     SedeStore store;
     
-    @Inject
-    CorsoStore corsoStore;
-    
-    @Inject
-    TagStore tagStore;
-    
     @Context
     ResourceContext rc;
+    
+   
     
 
     // Espongo il metodo di ricerca GET 
@@ -61,42 +58,35 @@ public class SediResource {
     // quando cerco una singola sede restituisco non più una Sede,
     // ma passo il controllo alla risorsa SedeResource
     // quando passo il controllo ad una sotto risorsa non devo più esporre il metodo @GET
+  @GET
+    @Path("search")
+    public List<Sede> search(
+            @QueryParam("nome") String searchNome,
+            @QueryParam("citta") String searchCitta) {
+        return store.search(searchNome, searchCitta);
+    }
+
+    // niente @GET per accedere ad una sottorisorsa!!
     @Path("{id}")
-    // restituisce l'oggetto SedeResource
+    // es.: http://localhost:8080/nostalciac2.0/resources/sedi/2
     public SedeResource find(@PathParam("id") int id) {
-        // restituisco una nuova istanza SedeResource
         SedeResource resource = rc.getResource(SedeResource.class);
         resource.setId(id);
         return resource;
     }
 
-    // Espongo il metodo di salvataggio POST 
-    // carica su DB il record
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(Sede sede, @Context UriInfo uriInfo) {
-        Sede saved = store.create(sede);
+        Sede saved = store.save(sede);
         URI uri = uriInfo
                 .getAbsolutePathBuilder()
                 .path("/" + saved.getId())
                 .build();
-//         return Response.ok(uri).build();
         return Response.ok(uri).build();
     }
-
-    /*
-    get e set
-    */
-
-    public ResourceContext getRc() {
-        return rc;
-    }
-
-    public void setRc(ResourceContext rc) {
-        this.rc = rc;
-    }
-    
 }
+
 
     
             
